@@ -1,3 +1,5 @@
+package Lab1;
+
 public class SystemCall {
 
     private final Types[] arguments;

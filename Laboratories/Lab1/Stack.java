@@ -1,3 +1,5 @@
+package Lab1;
+
 public class Stack {
 
     private final Object[] massive;
