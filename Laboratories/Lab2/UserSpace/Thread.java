@@ -1,4 +1,4 @@
-package Lab2;
+package Lab2.UserSpace;
 
 public class Thread {
     private final int id;
@@ -21,10 +21,6 @@ public class Thread {
             System.out.println(" и успешно завершен (отработал все " + leadTime + ")");
             return true;
         }
-    }
-
-    public int getId() {
-        return id;
     }
 
     public int getLeadTime() {

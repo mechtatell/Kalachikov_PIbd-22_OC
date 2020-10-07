@@ -1,34 +1,29 @@
-package Lab2;
+package Lab2.UserSpace;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 
 public class Core {
 
     private final Queue<Process> processes;
-    private final Queue<Thread> threads;
-    private int maxTime = 10;
 
     public void schedule() {
+        int maxTime = 10;
         Process currentProcess = processes.poll();
         while (currentProcess != null) {
-            if (currentProcess.startProcess(maxTime)) {
-                currentProcess = processes.poll();
-            } else {
+            if (!currentProcess.startProcess(maxTime)) {
                 processes.add(currentProcess);
-                currentProcess = processes.poll();
             }
+            currentProcess = processes.poll();
         }
     }
 
     private Process createProcess(int id) {
-        Process process = new Process(id, this);
+        Process process = new Process(id);
         processes.add(process);
         System.out.println("Создан процесс " + id);
         return process;
-    }
-
-    public Queue<Thread> getThreads() {
-        return threads;
     }
 
     private void init() {
@@ -49,26 +44,6 @@ public class Core {
 
     public Core() {
         processes = new LinkedList<>();
-        threads = new LinkedList<>();
         init();
-    }
-
-    public Queue<Thread> getThreads(int idProcess) {
-        Queue<Thread> queue = new LinkedList<>();
-        int size = threads.size();
-        for (int i = 0; i < size && !threads.isEmpty(); i++) {
-            if (threads.peek().getProcessID() == idProcess) {
-                queue.add(threads.poll());
-            } else {
-                threads.add(threads.poll());
-            }
-        }
-        return queue;
-    }
-
-    public void returnToThreads(Queue<Thread> queue) {
-        while (!queue.isEmpty()) {
-            threads.add(queue.poll());
-        }
     }
 }

@@ -1,16 +1,16 @@
-package Lab2;
+package Lab2.UserSpace;
 
-import java.util.Queue;
+import java.util.LinkedList;
 
 public class Process {
 
     private final int id;
     private int leadTime;
-    private final Core core;
+    private final LinkedList<Thread> threads;
 
-    public Process(int id, Core core) {
+    public Process(int id) {
         this.id = id;
-        this.core = core;
+        this.threads = new LinkedList<>();
     }
 
     public void setLeadTime(int leadTime) {
@@ -21,17 +21,15 @@ public class Process {
 
         System.out.println("Процесс " + id + " начал работу!");
 
-        Queue<Thread> processThreads = core.getThreads(id);
-        if (!processThreads.isEmpty()) {
-            Thread currentThread = processThreads.poll();
+        if (!threads.isEmpty()) {
+            Thread currentThread = threads.pollFirst();
             int time = 0;
             while (currentThread != null) {
                 if (currentThread.startThread(maxTime - time)) {
                     time += currentThread.getLeadTime();
-                    currentThread = processThreads.poll();
+                    currentThread = threads.poll();
                 } else {
-                    core.getThreads().add(currentThread);
-                    core.returnToThreads(processThreads);
+                    threads.addFirst(currentThread);
                     break;
                 }
             }
@@ -49,11 +47,7 @@ public class Process {
     }
 
     public void createThread(int id, int leadTime) {
-        core.getThreads().add(new Thread(id, leadTime, this.id));
+        threads.add(new Thread(id, leadTime, this.id));
         System.out.println("Создан поток " + id + " в процессе " + this.id + " который требует на выполнение " + leadTime + " секунд");
-    }
-
-    public int getId() {
-        return id;
     }
 }
