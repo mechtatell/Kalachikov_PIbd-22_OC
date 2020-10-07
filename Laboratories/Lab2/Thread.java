@@ -1,22 +1,24 @@
-package com.company;
+package Lab2;
 
 public class Thread {
-    private int id;
+    private final int id;
     private int leadTime;
+    private final int processID;
 
-    public Thread(int id, int leadTime) {
+    public Thread(int id, int leadTime, int processID) {
         this.id = id;
         this.leadTime = leadTime;
+        this.processID = processID;
     }
 
     public boolean startThread(int maxTime) {
-        System.out.println("Поток " + id + " начал работу");
+        System.out.print("Поток " + id + " начал работу");
         if (leadTime > maxTime) {
-            System.out.println("Поток " + id + " преостановлен");
             leadTime -= maxTime;
+            System.out.println(" и приостановлен (осталось отработать " + leadTime + ")");
             return false;
         } else {
-            System.out.println("Поток " + id + " завершил работу");
+            System.out.println(" и успешно завершен (отработал все " + leadTime + ")");
             return true;
         }
     }
@@ -27,5 +29,9 @@ public class Thread {
 
     public int getLeadTime() {
         return leadTime;
+    }
+
+    public int getProcessID() {
+        return processID;
     }
 }

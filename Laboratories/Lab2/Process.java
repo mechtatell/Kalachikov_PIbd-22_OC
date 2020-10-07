@@ -1,14 +1,12 @@
-package com.company;
-import java.util.HashMap;
-import java.util.LinkedList;
+package Lab2;
+
 import java.util.Queue;
-import java.util.Random;
 
 public class Process {
 
-    private int id;
+    private final int id;
     private int leadTime;
-    private Core core;
+    private final Core core;
 
     public Process(int id, Core core) {
         this.id = id;
@@ -20,35 +18,42 @@ public class Process {
     }
 
     public boolean startProcess(int maxTime) {
-        System.out.println("Процесс " + id + " начал работу (" + leadTime + ")");
-        int time = 0;
-        Thread currentThread = core.findThreadWithSmallestLeadTime(this);
-        while (time < maxTime && currentThread != null) {
-            if (currentThread.startThread(maxTime)) {
-                time += currentThread.getLeadTime();
+
+        System.out.println("Процесс " + id + " начал работу!");
+
+        Queue<Thread> processThreads = core.getThreads(id);
+        if (!processThreads.isEmpty()) {
+            Thread currentThread = processThreads.poll();
+            int time = 0;
+            while (currentThread != null) {
+                if (currentThread.startThread(maxTime - time)) {
+                    time += currentThread.getLeadTime();
+                    currentThread = processThreads.poll();
+                } else {
+                    core.getThreads().add(currentThread);
+                    core.returnToThreads(processThreads);
+                    break;
+                }
             }
-            currentThread = core.findThreadWithSmallestLeadTime(this);
         }
+
         if (leadTime > maxTime) {
             leadTime -= maxTime;
-            System.out.println("Процесс " + id + " прерван (" + leadTime + ")");
+            System.out.println("Процесс " + id + " прерван (осталось отработать " + leadTime + ")");
+            System.out.println("---переключение---\n");
             return false;
         } else {
-            System.out.println("Процесс " + id + " завершил работу");
+            System.out.println("---Процесс " + id + " завершил работу---\n");
             return true;
         }
     }
 
     public void createThread(int id, int leadTime) {
-        core.getThreads().put(this, new Thread(id, leadTime));
-        System.out.println("Создан поток " + id + " который требует на выполнение " + leadTime + " секунд");
+        core.getThreads().add(new Thread(id, leadTime, this.id));
+        System.out.println("Создан поток " + id + " в процессе " + this.id + " который требует на выполнение " + leadTime + " секунд");
     }
 
     public int getId() {
         return id;
-    }
-
-    public int getLeadTime() {
-        return leadTime;
     }
 }

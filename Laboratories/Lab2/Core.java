@@ -1,78 +1,74 @@
-package com.company;
+package Lab2;
 
 import java.util.*;
 
 public class Core {
 
-    private final HashMap<Integer, Process> processes;
-    private HashMap<Process, Thread> threads;
+    private final Queue<Process> processes;
+    private final Queue<Thread> threads;
+    private int maxTime = 10;
 
     public void schedule() {
-        Process currentProcess = findProcessWithSmallestLeadTime();
+        Process currentProcess = processes.poll();
         while (currentProcess != null) {
-            int maxTime = 5;
             if (currentProcess.startProcess(maxTime)) {
-                processes.remove(currentProcess.getId());
+                currentProcess = processes.poll();
+            } else {
+                processes.add(currentProcess);
+                currentProcess = processes.poll();
             }
-            currentProcess = findProcessWithSmallestLeadTime();
         }
     }
 
-    private void createProcess(int id) {
-        processes.put(id, new Process(id, this));
+    private Process createProcess(int id) {
+        Process process = new Process(id, this);
+        processes.add(process);
         System.out.println("Создан процесс " + id);
+        return process;
     }
 
-    public HashMap<Process, Thread> getThreads() {
+    public Queue<Thread> getThreads() {
         return threads;
     }
 
     private void init() {
         Random random = new Random();
-        for (int id = 1; id < random.nextInt(7) + 3; id++) {
-            createProcess(id);
+        for (int id = 1; id < random.nextInt(2) + 3; id++) {
+            Process process = createProcess(id);
             int processLeadTime = 0;
-            for (int idThread = 1; idThread < random.nextInt(7) + 3; idThread++) {
+            for (int idThread = 1; idThread < random.nextInt(2) + 3; idThread++) {
                 int threadLeadTime = random.nextInt(10) + 3;
-                processes.get(id).createThread(idThread, threadLeadTime);
+                process.createThread(idThread, threadLeadTime);
                 processLeadTime += threadLeadTime;
             }
-            processes.get(id).setLeadTime(processLeadTime);
-            System.out.println("Процесс " + id + " требует на выполнение " + processLeadTime);
+            process.setLeadTime(processLeadTime);
+            System.out.println("Процесс " + id + " требует на выполнение " + processLeadTime + '\n');
         }
+        System.out.println("\n-----\n");
     }
 
     public Core() {
-        processes = new HashMap<>();
-        threads = new HashMap<>();
+        processes = new LinkedList<>();
+        threads = new LinkedList<>();
         init();
     }
 
-    private Process findProcessWithSmallestLeadTime() {
-        int minTime = 15;
-        Process processWithSmallestLeadTime = null;
-        for (Map.Entry<Integer, Process> entry : processes.entrySet()) {
-            if (entry.getValue().getLeadTime() < minTime) {
-                minTime = entry.getValue().getLeadTime();
-                processWithSmallestLeadTime = entry.getValue();
+    public Queue<Thread> getThreads(int idProcess) {
+        Queue<Thread> queue = new LinkedList<>();
+        int size = threads.size();
+        for (int i = 0; i < size && !threads.isEmpty(); i++) {
+            if (threads.peek().getProcessID() == idProcess) {
+                queue.add(threads.poll());
+            } else {
+                threads.add(threads.poll());
             }
         }
-        return processWithSmallestLeadTime;
+        return queue;
     }
 
-    public Thread findThreadWithSmallestLeadTime(Process process) {
-        int minTime = 15;
-        Thread threadWithSmallestLeadTime = null;
-        for (Map.Entry<Process, Thread> entry : threads.entrySet()) {
-            if (entry.getValue().getLeadTime() < minTime && entry.getKey() == process) {
-                minTime = entry.getValue().getLeadTime();
-                threadWithSmallestLeadTime = entry.getValue();
-            }
+    public void returnToThreads(Queue<Thread> queue) {
+        while (!queue.isEmpty()) {
+            threads.add(queue.poll());
         }
-        return threadWithSmallestLeadTime;
-    }
-
-    public void setThreads(HashMap<Process, Thread> threads) {
-        this.threads = threads;
     }
 }
