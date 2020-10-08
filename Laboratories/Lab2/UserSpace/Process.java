@@ -17,26 +17,53 @@ public class Process {
         this.leadTime = leadTime;
     }
 
-    public boolean startProcess(int maxTime) {
+    public boolean startProcess(int maxProcessTime) {
 
         System.out.println("Процесс " + id + " начал работу!");
 
         if (!threads.isEmpty()) {
+            int maxThreadTime = maxProcessTime / threads.size();
+            System.out.println("Время выделенное каждому потоку - " + maxThreadTime);
             Thread currentThread = threads.pollFirst();
             int time = 0;
-            while (currentThread != null) {
-                if (currentThread.startThread(maxTime - time)) {
-                    time += currentThread.getLeadTime();
+            while (currentThread != null && time < maxProcessTime) {
+                int threadLeadTime = currentThread.getLeadTime();
+                if (maxProcessTime - time < maxThreadTime) {
+                    if (currentThread.startThread(maxProcessTime - time)) {
+                        time += threadLeadTime;
+                        currentThread = threads.poll();
+                    } else {
+                        time += maxThreadTime;
+                        threads.addLast(currentThread);
+                    }
+                }
+                else if (currentThread.isPriority()) {
+                    if (currentThread.startThread(maxThreadTime * 2)) {
+                        time += threadLeadTime;
+                        currentThread = threads.poll();
+                    } else {
+                        time += maxThreadTime * 2;
+                        threads.addLast(currentThread);
+                        currentThread = threads.pollFirst();
+                    }
+                }
+                else if (currentThread.startThread(maxThreadTime)) {
+                    time += threadLeadTime;
                     currentThread = threads.poll();
                 } else {
-                    threads.addFirst(currentThread);
-                    break;
+                    time += maxThreadTime;
+                    threads.addLast(currentThread);
+                    currentThread = threads.pollFirst();
                 }
+            }
+
+            if (currentThread != null) {
+                threads.addFirst(currentThread);
             }
         }
 
-        if (leadTime > maxTime) {
-            leadTime -= maxTime;
+        if (leadTime > maxProcessTime) {
+            leadTime -= maxProcessTime;
             System.out.println("Процесс " + id + " прерван (осталось отработать " + leadTime + ")");
             System.out.println("---переключение---\n");
             return false;

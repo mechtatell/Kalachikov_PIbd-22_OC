@@ -11,6 +11,22 @@ public class Core {
         int maxTime = 10;
         Process currentProcess = processes.poll();
         while (currentProcess != null) {
+            System.out.println("Процесс " + currentProcess.getId() + " начал работу!");
+            Queue<Thread> processThreads = getThreads(currentProcess.getId());
+            if (!processThreads.isEmpty()) {
+                Thread currentThread = processThreads.poll();
+                int time = 0;
+                while (currentThread != null) {
+                    if (currentThread.startThread(maxTime - time)) {
+                        time += currentThread.getLeadTime();
+                        currentThread = processThreads.poll();
+                    } else {
+                        threads.add(currentThread);
+                        returnToThreads(processThreads);
+                        break;
+                    }
+                }
+            }
             if (!currentProcess.startProcess(maxTime)) {
                 processes.add(currentProcess);
             }
