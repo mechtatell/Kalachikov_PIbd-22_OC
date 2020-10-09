@@ -1,42 +1,32 @@
 package Lab2.UserSpace;
 
-import org.w3c.dom.ls.LSOutput;
-
 public class Thread {
     private final int id;
     private int leadTime;
-    private final int processID;
-    private boolean priority;
+    private final boolean priority;
 
-    public Thread(int id, int leadTime, int processID) {
+    public Thread(int id, int leadTime) {
         this.id = id;
         this.leadTime = leadTime;
-        this.processID = processID;
         priority = Math.random() > 0.5;
     }
 
     public boolean startThread(int maxTime) {
         System.out.print("Поток " + id + " начал работу");
+        String priority = "";
+        if (this.priority) priority = " (Приоритетный)";
         if (leadTime > maxTime) {
             leadTime -= maxTime;
-            System.out.print(" и приостановлен (осталось отработать " + leadTime + ", сейчас отработал " + maxTime + ")");
-            if (priority) {
-                System.out.print(" (Приоритетный)");
-            }
-            System.out.println();
+            System.out.println(" и приостановлен (осталось отработать " + leadTime + ", сейчас отработал " + maxTime + ")" + priority);
             return false;
         } else {
-            System.out.println(" и успешно завершен (отработал все " + leadTime + ")");
+            System.out.println(" и успешно завершен (отработал все " + leadTime + ")" + priority);
             return true;
         }
     }
 
     public int getLeadTime() {
         return leadTime;
-    }
-
-    public int getProcessID() {
-        return processID;
     }
 
     public boolean isPriority() {

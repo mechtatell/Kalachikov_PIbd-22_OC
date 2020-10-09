@@ -22,36 +22,26 @@ public class Process {
         System.out.println("Процесс " + id + " начал работу!");
 
         if (!threads.isEmpty()) {
+
             int maxThreadTime = maxProcessTime / threads.size();
             System.out.println("Время выделенное каждому потоку - " + maxThreadTime);
             Thread currentThread = threads.pollFirst();
             int time = 0;
             while (currentThread != null && time < maxProcessTime) {
                 int threadLeadTime = currentThread.getLeadTime();
-                if (maxProcessTime - time < maxThreadTime) {
-                    if (currentThread.startThread(maxProcessTime - time)) {
-                        time += threadLeadTime;
-                        currentThread = threads.poll();
-                    } else {
-                        time += maxThreadTime;
-                        threads.addLast(currentThread);
-                    }
+                int currentThreadTime;
+
+                if (currentThread.isPriority()) {
+                    currentThreadTime = Math.min(maxProcessTime - time, maxThreadTime * 2);
+                } else {
+                    currentThreadTime = Math.min(maxProcessTime - time, maxThreadTime);
                 }
-                else if (currentThread.isPriority()) {
-                    if (currentThread.startThread(maxThreadTime * 2)) {
-                        time += threadLeadTime;
-                        currentThread = threads.poll();
-                    } else {
-                        time += maxThreadTime * 2;
-                        threads.addLast(currentThread);
-                        currentThread = threads.pollFirst();
-                    }
-                }
-                else if (currentThread.startThread(maxThreadTime)) {
+
+                if (currentThread.startThread(currentThreadTime)) {
                     time += threadLeadTime;
                     currentThread = threads.poll();
                 } else {
-                    time += maxThreadTime;
+                    time += currentThreadTime;
                     threads.addLast(currentThread);
                     currentThread = threads.pollFirst();
                 }
@@ -74,7 +64,10 @@ public class Process {
     }
 
     public void createThread(int id, int leadTime) {
-        threads.add(new Thread(id, leadTime, this.id));
-        System.out.println("Создан поток " + id + " в процессе " + this.id + " который требует на выполнение " + leadTime + " секунд");
+        Thread thread = new Thread(id, leadTime);
+        threads.add(thread);
+        String priority = "";
+        if (thread.isPriority()) priority = " (Приоритетный)";
+        System.out.println("Создан поток " + id + " в процессе " + this.id + " который требует на выполнение " + leadTime + " секунд" + priority);
     }
 }
