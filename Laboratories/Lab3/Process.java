@@ -5,17 +5,20 @@ import java.util.ArrayList;
 public class Process {
 
     private final int id;
-    private final int initCallSign = 15;
     private ArrayList<PageCell> virtualMemory;
 
-    public void start(MemoryManager memoryManager) {
+    public void work(MemoryManager memoryManager) {
         PageCell[] physicalMemory = memoryManager.getPhysicalMemory().getPageTable();
+        int initCallSign = 15;
 
         //каждый процесс в зависимости от пользователя обращается к случайной страничке виртуальной памяти
         int index = (int) (Math.random() * virtualMemory.size());
 
         //если эта страничка уже есть в физической памяти, увеличиваем ее признак обращения
-        if (virtualMemory.get(index).getIdOnPhysicalMemory() != -1 && physicalMemory[virtualMemory.get(index).getIdOnPhysicalMemory()] != null) {
+        if (virtualMemory.get(index).getIdOnPhysicalMemory() != -1 &&
+                physicalMemory[virtualMemory.get(index).getIdOnPhysicalMemory()].getId() == virtualMemory.get(index).getId() &&
+                physicalMemory[virtualMemory.get(index).getIdOnPhysicalMemory()].getProcessId() == virtualMemory.get(index).getProcessId())
+        {
             virtualMemory.get(index).setAppealStatus(virtualMemory.get(index).getAppealStatus() + 10);
             System.out.println("Страница " + virtualMemory.get(index).getId() + " процесса " + id +
                     " находится в физической памяти по адресу " + virtualMemory.get(index).getIdOnPhysicalMemory() +

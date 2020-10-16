@@ -10,16 +10,16 @@ public class MemoryManager {
 
     public void start() {
         //количество рассматриваемых итераций
-        int iterationCount = 5;
+        int iterationCount = 50;
         for (int i = 0; i < iterationCount; i++) {
             for (Process process : processList) {
-                process.start(this);
+                process.work(this);
             }
         }
     }
 
     public MemoryManager() {
-        int memorySize = 32;
+        int memorySize = 8;
         processList = new ArrayList<>();
         physicalMemory = new PageTable(memorySize);
         processInit();
