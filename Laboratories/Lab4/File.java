@@ -2,7 +2,7 @@ package Lab4;
 
 public class File {
     private final String name;
-    private final int size;
+    private int size;
     private int referenceToCell;
 
     public File(String name, int size, int referenceToCell) {
@@ -22,5 +22,17 @@ public class File {
 
     public void setReferenceToCell(int referenceToCell) {
         this.referenceToCell = referenceToCell;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public String getName() {
+        return name;
     }
 }

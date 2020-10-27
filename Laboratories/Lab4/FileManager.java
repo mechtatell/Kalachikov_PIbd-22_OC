@@ -2,7 +2,6 @@ package Lab4;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
 public class FileManager {
@@ -85,8 +84,8 @@ public class FileManager {
 
         File newCatalog = new File(name, 1, -1);
         DefaultMutableTreeNode catalogNode = new DefaultMutableTreeNode(newCatalog, true);
-        catalogNode.add(new DefaultMutableTreeNode(""));
-        if (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) {
+        catalogNode.add(new DefaultMutableTreeNode(new File("", -1, -1)));
+        if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
             node.remove(0);
         }
 
@@ -97,6 +96,8 @@ public class FileManager {
             return;
         }
         node.add(catalogNode);
+        File parent = (File) node.getUserObject();
+        parent.setSize(parent.getSize() + 1);
         newCatalog.setReferenceToCell(reference);
         frame.getFileManagerTree().updateUI();
         valueChanged();
@@ -138,7 +139,7 @@ public class FileManager {
 
         File newFile = new File(name, size, -1);
         DefaultMutableTreeNode fileNode = new DefaultMutableTreeNode(newFile, false);
-        if (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) {
+        if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
             node.remove(0);
         }
 
@@ -149,6 +150,8 @@ public class FileManager {
             return;
         }
         node.add(fileNode);
+        File parent = (File) node.getUserObject();
+        parent.setSize(parent.getSize() + size + 1);
         newFile.setReferenceToCell(reference);
         frame.getFileManagerTree().updateUI();
         valueChanged();
@@ -188,7 +191,9 @@ public class FileManager {
     private void markCatalog(DefaultMutableTreeNode node) {
         for (int i = 0; i < node.getChildCount(); i++) {
             drawPanel.getDiskArray()[((File) node.getUserObject()).getReferenceToCell()].setSectorState(SectorState.SELECTED);
-            if (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) break;
+            if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
+                break;
+            }
             if (node.getChildAt(i).isLeaf()) {
                 markLeaf(((File) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getReferenceToCell());
             } else {
@@ -211,12 +216,14 @@ public class FileManager {
                 "Удаление файла", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+            File parentFile = (File) parent.getUserObject();
+            parentFile.setSize(parentFile.getSize() - ((File) node.getUserObject()).getSize() - 1);
             parent.remove(node);
             if (parent.getChildCount() == 0) {
-                parent.add(new DefaultMutableTreeNode(""));
+                parent.add(new DefaultMutableTreeNode(new File("", -1, -1)));
             }
 
-            if (node.isLeaf() || ((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) {
+            if (node.isLeaf() || ((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
                 removeLeaf(((File) (node.getUserObject())).getReferenceToCell());
             } else {
                 removeCatalog(node);
@@ -239,7 +246,9 @@ public class FileManager {
     private void removeCatalog(DefaultMutableTreeNode node) {
         for (int i = 0; i < node.getChildCount(); i++) {
             drawPanel.getDiskArray()[((File) node.getUserObject()).getReferenceToCell()].setSectorState(SectorState.EMPTY);
-            if (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) break;
+            if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
+                break;
+            }
             if (node.getChildAt(i).isLeaf()) {
                 removeLeaf(((File) ((DefaultMutableTreeNode) node.getChildAt(i)).getUserObject()).getReferenceToCell());
             } else {
@@ -273,11 +282,28 @@ public class FileManager {
             }
 
             DefaultMutableTreeNode newNode = cloneNode(buffer);
-            if (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject().equals("")) {
+            if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
                 node.remove(0);
             }
-            node.add(newNode);
-            frame.getFileManagerTree().updateUI();
+
+            File newFile = (File) newNode.getUserObject();
+            if (newNode.isLeaf()) {
+                newFile.setReferenceToCell(drawPanel.getFileSystem().memoryAllocation(newFile.getSize()));
+            } else {
+                allocateCatalog(newNode);
+            }
+            if (newFile.getReferenceToCell() == -1) {
+                JOptionPane.showConfirmDialog(frame, "На диске нет места",
+                        "Ошибка", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+            } else {
+                newNode.setUserObject(newFile);
+                node.add(newNode);
+                frame.getFileManagerTree().updateUI();
+                File parentFile = (File) node.getUserObject();
+                parentFile.setSize(parentFile.getSize() + newFile.getSize() + 1);
+                valueChanged();
+                frame.repaint();
+            }
         } else {
             JOptionPane.showConfirmDialog(frame, "Буфер обмена пуст",
                     "Ошибка", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
@@ -285,10 +311,13 @@ public class FileManager {
     }
 
     private DefaultMutableTreeNode cloneNode(DefaultMutableTreeNode node) {
-        DefaultMutableTreeNode newNode = (DefaultMutableTreeNode) node.clone();
+        File nodeFile = (File) node.getUserObject();
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(new File(node.toString(), nodeFile.getSize(), nodeFile.getReferenceToCell()));
         for (int i = 0; i < node.getChildCount(); i++) {
             if (node.getChildAt(i).isLeaf()) {
-                newNode.add((MutableTreeNode) ((DefaultMutableTreeNode) node.getChildAt(i)).clone());
+                DefaultMutableTreeNode nodeChild = (DefaultMutableTreeNode) node.getChildAt(i);
+                File file = (File) nodeChild.getUserObject();
+                newNode.add(new DefaultMutableTreeNode(new File(nodeChild.toString(), file.getSize(), file.getReferenceToCell())));
             } else {
                 newNode.add(cloneNode((DefaultMutableTreeNode) node.getChildAt(i)));
             }
@@ -320,11 +349,27 @@ public class FileManager {
                         "Ошибка", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (((DefaultMutableTreeNode) catalog.getChildAt(0)).getUserObject().equals("")) {
+            if (((File)(((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
                 catalog.remove(0);
             }
             catalog.add(buffer);
             frame.getFileManagerTree().updateUI();
+        }
+    }
+
+    private void allocateCatalog(DefaultMutableTreeNode node) {
+        File catalog = (File) node.getUserObject();
+        catalog.setReferenceToCell(drawPanel.getFileSystem().memoryAllocation(0));
+        node.setUserObject(catalog);
+        for (int i = 0; i < node.getChildCount(); i++) {
+            if (node.getChildAt(i).isLeaf()) {
+                DefaultMutableTreeNode nodeChild = (DefaultMutableTreeNode) node.getChildAt(i);
+                File file = (File) nodeChild.getUserObject();
+                file.setReferenceToCell(drawPanel.getFileSystem().memoryAllocation(file.getSize()));
+                nodeChild.setUserObject(file);
+            } else {
+                allocateCatalog((DefaultMutableTreeNode) node.getChildAt(i));
+            }
         }
     }
 }

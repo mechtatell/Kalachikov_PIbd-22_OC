@@ -60,7 +60,7 @@ public class Frame extends JFrame {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootCatalog, true);
         rootCatalog.setReferenceToCell(fileSystem.memoryAllocation(0));
         fileManagerTree = new JTree(root);
-        root.add(new DefaultMutableTreeNode(""));
+        root.add(new DefaultMutableTreeNode(new File("", -1, -1)));
 
         getContentPane().add(fileManagerTree);
         fileManagerTree.setBounds(500, 30, 300, 650);

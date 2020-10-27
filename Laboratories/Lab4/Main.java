@@ -22,5 +22,6 @@ public class Main {
         //Добавление отрисовки таблицы файловой системы на окно приложения
         frame.getContentPane().add(drawPanel);
         drawPanel.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+        frame.repaint();
     }
 }
