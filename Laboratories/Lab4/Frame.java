@@ -29,7 +29,7 @@ public class Frame extends JFrame {
         JButton buttonCopy = new JButton("Копировать");
         JButton buttonPaste = new JButton("Вставить");
         JButton buttonMove = new JButton("Переместить");
-        JButton buttonShowInfo = new JButton("Документация");
+        JButton buttonShowInfo = new JButton("Инфо");
 
         getContentPane().add(buttonCreateFile);
         getContentPane().add(buttonCreateCatalog);
@@ -53,6 +53,7 @@ public class Frame extends JFrame {
         buttonCopy.addActionListener(e -> fileManager.copy());
         buttonPaste.addActionListener(e -> fileManager.paste());
         buttonMove.addActionListener(e -> fileManager.move());
+        buttonShowInfo.addActionListener(e -> showInfo());
     }
 
     public void initTree(FileManager fileManager, FileSystem fileSystem) {
@@ -70,5 +71,16 @@ public class Frame extends JFrame {
 
     public JTree getFileManagerTree() {
         return fileManagerTree;
+    }
+
+    public void showInfo() {
+        JOptionPane.showMessageDialog(this, "Здравствуйте! Реализовывал алгоритм размещения с" +
+                " использованием связного списка,\n каждый сектор(Sector) имеет ссылку(индекс) на следующий сектор(изначально -1). " +
+                "При выделении памяти берется рандомная ячейка\n в списке свободных кластеров, кластер занимается и в предыдущий кластер записывается " +
+                "индекс нового кластера.\n\nИзначально в диске создается корневой каталог root, и каждый каталог занимает 1 условную единицу веса.\n" +
+                "Так же одна ячейка выделяется на список свободных кластеров, она будет всегда синяя. При создании диска может получиться\nтолько 2400 " +
+                "секторов, иначе обработается исключение. При создании файла к его размеру добавляется одна единица веса для\nхранения атрибутов. В каждом пустом каталоге находится пустой файл, " +
+                "чтобы пустые каталоги отображались как каталоги, а не как файлы.\nКак только в каталоге появляются другие файлы, пустой файл удаляется.\n\n" +
+                "Постарался обработать все возможные исключения, приложение должно работать стабильно", "Инфо", JOptionPane.PLAIN_MESSAGE);
     }
 }

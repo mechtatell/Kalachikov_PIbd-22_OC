@@ -1,12 +1,16 @@
 package Lab4;
 
+import javax.swing.*;
+
 public class Main {
 
     public static void main(String[] args) {
 
+
         //Создание окна приложения
         Frame frame = Frame.getFrame();
         frame.setVisible(true);
+        frame.showInfo();
 
         //Инициализация панели отрисовки для файловой системы
         DrawPanel drawPanel = new DrawPanel(frame.getWidth(), frame.getHeight());
