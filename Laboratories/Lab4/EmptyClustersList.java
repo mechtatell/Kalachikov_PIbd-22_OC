@@ -23,6 +23,8 @@ public class EmptyClustersList {
         emptyClustersList.remove(value);
     }
 
+    public void freeCluster(int value) {emptyClustersList.add(value); }
+
     public int getCluster(int index) {
         return emptyClustersList.get(index);
     }

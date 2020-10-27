@@ -7,7 +7,7 @@ public class DrawPanel extends JPanel {
 
     private final int frameWidth;
     private final int frameHeight;
-    private FileSystemMonitor fileSystemMonitor;
+    private FileSystem fileSystem;
 
     public DrawPanel(int frameWidth, int frameHeight) {
         this.frameWidth = frameWidth;
@@ -19,22 +19,22 @@ public class DrawPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.WHITE);
         g2.fillRect(0, 0, frameWidth, frameHeight);
-        if (fileSystemMonitor != null) {
-            fileSystemMonitor.renderTable(g2);
+        if (fileSystem != null) {
+            fileSystem.renderTable(g2);
         }
         g2.setColor(Color.black);
         g2.fillRect(458, 0, 4, 700);
     }
 
-    public void setFileSystemMonitor(FileSystemMonitor fileSystemMonitor) {
-        this.fileSystemMonitor = fileSystemMonitor;
+    public void setFileSystem(FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
     }
 
-    public FileSystemMonitor getFileSystemMonitor() {
-        return fileSystemMonitor;
+    public FileSystem getFileSystem() {
+        return fileSystem;
     }
 
     public Sector[] getDiskArray() {
-        return fileSystemMonitor.getDisc().getSectorsArray();
+        return fileSystem.getDisc().getSectorsArray();
     }
 }

@@ -2,18 +2,10 @@ package Lab4;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.*;
 
 public class Frame extends JFrame {
 
-    private JButton buttonCreateFile;
-    private JButton buttonCreateCatalog;
-    private JButton buttonRemove;
-    private JButton buttonCopy;
-    private JButton buttonPaste;
-    private JButton buttonMove;
-    private JButton buttonShowInfo;
-    private JTree fileManager;
+    private JTree fileManagerTree;
 
     private Frame(String name) {
         super(name);
@@ -30,14 +22,14 @@ public class Frame extends JFrame {
         return frame;
     }
 
-    public void initButtons() {
-        buttonCreateCatalog = new JButton("Создать каталог");
-        buttonCreateFile = new JButton("Создать файл");
-        buttonRemove = new JButton("Удалить");
-        buttonCopy = new JButton("Копировать");
-        buttonPaste = new JButton("Вставить");
-        buttonMove = new JButton("Переместить");
-        buttonShowInfo = new JButton("Документация");
+    public void initButtons(FileManager fileManager) {
+        JButton buttonCreateCatalog = new JButton("Создать каталог");
+        JButton buttonCreateFile = new JButton("Создать файл");
+        JButton buttonRemove = new JButton("Удалить");
+        JButton buttonCopy = new JButton("Копировать");
+        JButton buttonPaste = new JButton("Вставить");
+        JButton buttonMove = new JButton("Переместить");
+        JButton buttonShowInfo = new JButton("Документация");
 
         getContentPane().add(buttonCreateFile);
         getContentPane().add(buttonCreateCatalog);
@@ -47,54 +39,36 @@ public class Frame extends JFrame {
         getContentPane().add(buttonMove);
         getContentPane().add(buttonShowInfo);
 
-        buttonCreateFile.setBounds(955, 20, 200, 30);
-        buttonCreateCatalog.setBounds(955, 60, 200, 30);
-        buttonRemove.setBounds(955, 100, 200, 30);
-        buttonCopy.setBounds(955, 140, 95, 30);
-        buttonPaste.setBounds(1060, 140, 95, 30);
-        buttonMove.setBounds(955, 180, 200, 30);
-        buttonShowInfo.setBounds(955, 220, 200, 30);
+        buttonCreateFile.setBounds(915, 200, 240, 30);
+        buttonCreateCatalog.setBounds(915, 240, 240, 30);
+        buttonRemove.setBounds(915, 280, 240, 30);
+        buttonCopy.setBounds(915, 320, 115, 30);
+        buttonPaste.setBounds(1040, 320, 115, 30);
+        buttonMove.setBounds(915, 360, 240, 30);
+        buttonShowInfo.setBounds(915, 400, 240, 30);
+
+        buttonCreateCatalog.addActionListener(e -> fileManager.createCatalog());
+        buttonCreateFile.addActionListener(e -> fileManager.createFile());
+        buttonRemove.addActionListener(e -> fileManager.remove());
+        buttonCopy.addActionListener(e -> fileManager.copy());
+        buttonPaste.addActionListener(e -> fileManager.paste());
+        buttonMove.addActionListener(e -> fileManager.move());
     }
 
-    public void initTree() {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new File("root", 1, 1), true);
-        fileManager = new JTree(root);
+    public void initTree(FileManager fileManager, FileSystem fileSystem) {
+        File rootCatalog = new File("root", 0, -1);
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootCatalog, true);
+        rootCatalog.setReferenceToCell(fileSystem.memoryAllocation(0));
+        fileManagerTree = new JTree(root);
         root.add(new DefaultMutableTreeNode(""));
 
-        getContentPane().add(fileManager);
-        fileManager.setBounds(500, 30, 300, 650);
+        getContentPane().add(fileManagerTree);
+        fileManagerTree.setBounds(500, 30, 300, 650);
+        fileManagerTree.addTreeSelectionListener(e -> fileManager.valueChanged());
         repaint();
     }
 
-    public JButton getButtonCreateFile() {
-        return buttonCreateFile;
-    }
-
-    public JButton getButtonCreateCatalog() {
-        return buttonCreateCatalog;
-    }
-
-    public JButton getButtonRemove() {
-        return buttonRemove;
-    }
-
-    public JButton getButtonCopy() {
-        return buttonCopy;
-    }
-
-    public JButton getButtonPaste() {
-        return buttonPaste;
-    }
-
-    public JButton getButtonMove() {
-        return buttonMove;
-    }
-
-    public JButton getButtonShowInfo() {
-        return buttonShowInfo;
-    }
-
-    public JTree getFileManager() {
-        return fileManager;
+    public JTree getFileManagerTree() {
+        return fileManagerTree;
     }
 }

@@ -3,12 +3,12 @@ package Lab4;
 import java.awt.*;
 import java.util.Random;
 
-public class FileSystemMonitor {
+public class FileSystem {
 
     private final Disc disc;
     private final EmptyClustersList clustersList;
 
-    public FileSystemMonitor(Disc disc) {
+    public FileSystem(Disc disc) {
         this.disc = disc;
         clustersList = new EmptyClustersList(disc);
         memoryAllocation(0);
@@ -63,5 +63,9 @@ public class FileSystemMonitor {
 
     public Disc getDisc() {
         return disc;
+    }
+
+    public EmptyClustersList getClustersList() {
+        return clustersList;
     }
 }
