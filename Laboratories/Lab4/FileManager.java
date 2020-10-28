@@ -328,7 +328,7 @@ public class FileManager {
     public void move() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) frame.getFileManagerTree().getLastSelectedPathComponent();
 
-        if (node == null) {
+        if (node == null || node.getParent() == null) {
             JOptionPane.showConfirmDialog(frame, "Выберите файл, который хотите переместить",
                     "Ошибка", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
             return;
@@ -349,7 +349,7 @@ public class FileManager {
                         "Ошибка", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            if (node.getChildCount() > 0 && ((File) (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
+            if (catalog.getChildCount() > 0 && ((File) (((DefaultMutableTreeNode) catalog.getChildAt(0)).getUserObject())).getName().equals("")) {
                 catalog.remove(0);
             }
             catalog.add(buffer);
