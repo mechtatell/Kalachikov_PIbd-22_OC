@@ -35,7 +35,7 @@ public class FileSystem {
     }
 
     public int memoryAllocation(int size) {
-        int cellCount = (int) Math.ceil((double)(size + 1) / (double)disc.getSectorsSize());
+        int cellCount = (int) Math.ceil((double) (size + 1) / (double) disc.getSectorsSize());
         int startSector = -1;
         Random random = new Random();
         Sector prevSector = null;
