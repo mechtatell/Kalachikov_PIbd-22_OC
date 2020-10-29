@@ -13,7 +13,7 @@ public class Frame extends JFrame {
 
     public static Frame getFrame() {
         Frame frame = new Frame("Файловый менеджер");
-        frame.setSize(1200, 700);
+        frame.setSize(790, 700);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -39,13 +39,13 @@ public class Frame extends JFrame {
         getContentPane().add(buttonMove);
         getContentPane().add(buttonShowInfo);
 
-        buttonCreateFile.setBounds(915, 200, 240, 30);
-        buttonCreateCatalog.setBounds(915, 240, 240, 30);
-        buttonRemove.setBounds(915, 280, 240, 30);
-        buttonCopy.setBounds(915, 320, 115, 30);
-        buttonPaste.setBounds(1040, 320, 115, 30);
-        buttonMove.setBounds(915, 360, 240, 30);
-        buttonShowInfo.setBounds(915, 400, 240, 30);
+        buttonCreateFile.setBounds(500, 360, 240, 30);
+        buttonCreateCatalog.setBounds(500, 400, 240, 30);
+        buttonRemove.setBounds(500, 440, 240, 30);
+        buttonCopy.setBounds(500, 480, 115, 30);
+        buttonPaste.setBounds(625, 480, 115, 30);
+        buttonMove.setBounds(500, 520, 240, 30);
+        buttonShowInfo.setBounds(500, 560, 240, 30);
 
         buttonCreateCatalog.addActionListener(e -> fileManager.createCatalog());
         buttonCreateFile.addActionListener(e -> fileManager.createFile());
@@ -63,8 +63,9 @@ public class Frame extends JFrame {
         fileManagerTree = new JTree(root);
         root.add(new DefaultMutableTreeNode(new File("", -1, -1)));
 
-        getContentPane().add(fileManagerTree);
-        fileManagerTree.setBounds(500, 30, 300, 650);
+        JScrollPane scrollPane = new JScrollPane(fileManagerTree);
+        getContentPane().add(scrollPane);
+        scrollPane.setBounds(500, 30, 240, 300);
         fileManagerTree.addTreeSelectionListener(e -> fileManager.valueChanged());
         repaint();
     }

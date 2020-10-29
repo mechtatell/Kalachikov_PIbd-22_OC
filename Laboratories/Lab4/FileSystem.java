@@ -23,9 +23,9 @@ public class FileSystem {
                     return;
                 }
                 switch (disc.getSectorsArray()[i * 40 + j].getSectorState()) {
-                    case EMPTY -> g.setColor(Color.LIGHT_GRAY);
-                    case FILLED -> g.setColor(Color.BLUE);
-                    case SELECTED -> g.setColor(Color.RED);
+                    case EMPTY -> g.setColor(new Color(228, 219, 217));
+                    case FILLED -> g.setColor(new Color(110, 147, 214));
+                    case SELECTED -> g.setColor(new Color(222, 60, 60));
                 }
                 g.fillRect(margin + j * cellSize, margin + i * cellSize, cellSize, cellSize);
                 g.setColor(Color.BLACK);
