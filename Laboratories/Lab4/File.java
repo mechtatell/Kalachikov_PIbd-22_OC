@@ -1,14 +1,19 @@
 package Lab4;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class File {
     private final String name;
     private int size;
     private int referenceToCell;
+    private Disc disc;
 
-    public File(String name, int size, int referenceToCell) {
+    public File(String name, int size, int referenceToCell, Disc disc) {
         this.name = name;
         this.size = size;
         this.referenceToCell = referenceToCell;
+        this.disc = disc;
     }
 
     public int getReferenceToCell() {
@@ -34,5 +39,15 @@ public class File {
 
     public String getName() {
         return name;
+    }
+
+    public List<Sector> getSectorsList() {
+        List<Sector> sectorsList = new LinkedList<>();
+        int reference = referenceToCell;
+        while (reference != -1) {
+            sectorsList.add(disc.getSectorsArray()[reference]);
+            reference = disc.getSectorsArray()[reference].getNextSector();
+        }
+        return sectorsList;
     }
 }

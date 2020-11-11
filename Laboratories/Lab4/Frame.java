@@ -57,11 +57,11 @@ public class Frame extends JFrame {
     }
 
     public void initTree(FileManager fileManager, FileSystem fileSystem) {
-        File rootCatalog = new File("root", 0, -1);
+        File rootCatalog = new File("root", 0, -1, fileSystem.getDisc());
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootCatalog, true);
         rootCatalog.setReferenceToCell(fileSystem.memoryAllocation(0));
         fileManagerTree = new JTree(root);
-        root.add(new DefaultMutableTreeNode(new File("", -1, -1)));
+        root.add(new DefaultMutableTreeNode(new File("", -1, -1, fileSystem.getDisc())));
 
         JScrollPane scrollPane = new JScrollPane(fileManagerTree);
         getContentPane().add(scrollPane);

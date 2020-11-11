@@ -9,7 +9,7 @@ public class EmptyClustersList {
     public EmptyClustersList(Disc disc) {
         this.emptyClustersList = new ArrayList<>();
         for (int i = 0; i < disc.getSectorsArray().length; i++) {
-            if (disc.getSectorsArray()[i].getSectorState() == SectorState.EMPTY) {
+            if (disc.getSectorState(i) == SectorState.EMPTY) {
                 emptyClustersList.add(i);
             }
         }

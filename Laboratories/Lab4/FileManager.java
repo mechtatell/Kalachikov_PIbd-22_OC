@@ -82,9 +82,9 @@ public class FileManager {
             return;
         }
 
-        File newCatalog = new File(name, 1, -1);
+        File newCatalog = new File(name, 1, -1, drawPanel.getFileSystem().getDisc());
         DefaultMutableTreeNode catalogNode = new DefaultMutableTreeNode(newCatalog, true);
-        catalogNode.add(new DefaultMutableTreeNode(new File("", -1, -1)));
+        catalogNode.add(new DefaultMutableTreeNode(new File("", -1, -1, drawPanel.getFileSystem().getDisc())));
         if (((File) (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
             node.remove(0);
         }
@@ -137,7 +137,7 @@ public class FileManager {
             return;
         }
 
-        File newFile = new File(name, size, -1);
+        File newFile = new File(name, size, -1, drawPanel.getFileSystem().getDisc());
         DefaultMutableTreeNode fileNode = new DefaultMutableTreeNode(newFile, false);
         if (((File) (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
             node.remove(0);
@@ -220,7 +220,7 @@ public class FileManager {
             parentFile.setSize(parentFile.getSize() - ((File) node.getUserObject()).getSize() - 1);
             parent.remove(node);
             if (parent.getChildCount() == 0) {
-                parent.add(new DefaultMutableTreeNode(new File("", -1, -1)));
+                parent.add(new DefaultMutableTreeNode(new File("", -1, -1, drawPanel.getFileSystem().getDisc())));
             }
 
             if (node.isLeaf() || ((File) (((DefaultMutableTreeNode) node.getChildAt(0)).getUserObject())).getName().equals("")) {
@@ -312,12 +312,14 @@ public class FileManager {
 
     private DefaultMutableTreeNode cloneNode(DefaultMutableTreeNode node) {
         File nodeFile = (File) node.getUserObject();
-        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(new File(node.toString(), nodeFile.getSize(), nodeFile.getReferenceToCell()));
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(new File(node.toString(), nodeFile.getSize(), nodeFile.getReferenceToCell(),
+                drawPanel.getFileSystem().getDisc()));
         for (int i = 0; i < node.getChildCount(); i++) {
             if (node.getChildAt(i).isLeaf()) {
                 DefaultMutableTreeNode nodeChild = (DefaultMutableTreeNode) node.getChildAt(i);
                 File file = (File) nodeChild.getUserObject();
-                newNode.add(new DefaultMutableTreeNode(new File(nodeChild.toString(), file.getSize(), file.getReferenceToCell())));
+                newNode.add(new DefaultMutableTreeNode(new File(nodeChild.toString(), file.getSize(), file.getReferenceToCell(),
+                        drawPanel.getFileSystem().getDisc())));
             } else {
                 newNode.add(cloneNode((DefaultMutableTreeNode) node.getChildAt(i)));
             }

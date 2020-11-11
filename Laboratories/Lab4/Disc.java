@@ -31,4 +31,8 @@ public class Disc {
     public int getSectorsSize() {
         return sectorsSize;
     }
+
+    public SectorState getSectorState(int index) {
+        return sectorsArray[index].getSectorState();
+    }
 }
